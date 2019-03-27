@@ -45,6 +45,8 @@ namespace MazeGame.Level
             return space != null;
         }
 
+        public virtual int GetNonGameAreaTile(int x, int y) => -1;
+
         public IEnumerable<Space> GetOverlays(int x, int y)
         {
             var yCount = _Rows.Count;

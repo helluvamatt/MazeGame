@@ -20,26 +20,13 @@ namespace MazeGame.Level
         protected override void MapTiles()
         {
             int id = 0;
-            for (int y = 0; y < TILE_SIZE; y++)
+            for (int y = 0; y < TILE_COUNT; y++)
             {
-                for (int x = 0; x < TILE_SIZE; x++)
+                for (int x = 0; x < TILE_COUNT; x++)
                 {
                     AddTile(ref id, new Rectangle(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE));
                 }
             }
-
-            // Special tiles for multi-sprites
-            AddTile(ref id, new Rectangle(960, 0, 64, 160)); // Tree, conifer
-            AddTile(ref id, new Rectangle(768, 384, 96, 96)); // Dome bush, north
-            AddTile(ref id, new Rectangle(864, 284, 96, 96)); // Dome bush, south
-            AddTile(ref id, new Rectangle(512, 512, 96, 96)); // Bridge, with railings
-            AddTile(ref id, new Rectangle(480, 384, 64, 96)); // Easter Island head
-            AddTile(ref id, new Rectangle(448, 384, TILE_SIZE, 96)); // Column
-            AddTile(ref id, new Rectangle(608, 480, TILE_SIZE, 96)); // Column, ruin
-            AddTile(ref id, new Rectangle(640, 480, TILE_SIZE, 96)); // Column, cracked
-            AddTile(ref id, new Rectangle(864, 928, 64, 96)); // Tree, small
-            AddTile(ref id, new Rectangle(928, 896, 96, 128)); // Tree, large
-            AddTile(ref id, new Rectangle(544, 284, TILE_SIZE, 64)); // Birdbath
         }
 
         protected override void Layout(Random rng, MazeCell[,] maze)
@@ -226,52 +213,60 @@ namespace MazeGame.Level
             }
         }
 
+        public override int GetNonGameAreaTile(int x, int y)
+        {
+            // TODO Areas outside of the level
+            return CORN_TOP_FILL_E_W;
+        }
+
         private int GetRandomGrass(Random rng) => GRASS_TILES[rng.Next(GRASS_TILES.Length)];
 
         private const int TILE_SIZE = 32;
+        private const int TILE_COUNT = 32;
+
         private const string TEXTURE = "gfx/terrain_atlas";
 
         // Tile ID constants
-        private const int GRASS = 3 * TILE_SIZE + 22;
-        private const int GRASS_2 = 5 * TILE_SIZE + 23;
-        private const int GRASS_3 = 5 * TILE_SIZE + 22;
-        private const int GRASS_4 = 5 * TILE_SIZE + 21;
+        private const int GRASS = 3 * TILE_COUNT + 22;
+        private const int GRASS_2 = 5 * TILE_COUNT + 23;
+        private const int GRASS_3 = 5 * TILE_COUNT + 22;
+        private const int GRASS_4 = 5 * TILE_COUNT + 21;
 
-        private const int DIRT_TRANSITION_W_N = 15 * TILE_SIZE + 6;
-        private const int DIRT_TRANSITION_E_N = 15 * TILE_SIZE + 7;
-        private const int DIRT_TRANSITION_W_S = 16 * TILE_SIZE + 6;
-        private const int DIRT_TRANSITION_E_S = 16 * TILE_SIZE + 7;
+        private const int DIRT_TRANSITION_W_N = 15 * TILE_COUNT + 6;
+        private const int DIRT_TRANSITION_E_N = 15 * TILE_COUNT + 7;
+        private const int DIRT_TRANSITION_W_S = 16 * TILE_COUNT + 6;
+        private const int DIRT_TRANSITION_E_S = 16 * TILE_COUNT + 7;
 
-        private const int DIRT_TRANSITION_SE = 17 * TILE_SIZE + 5;
-        private const int DIRT_TRANSITION_S = 17 * TILE_SIZE + 6;
-        private const int DIRT_TRANSITION_SW = 17 * TILE_SIZE + 7;
-        private const int DIRT_TRANSITION_E = 18 * TILE_SIZE + 5;
-        private const int DIRT_PLOWED = 18 * TILE_SIZE + 6;
-        private const int DIRT_TRANSITION_W = 18 * TILE_SIZE + 7;
-        private const int DIRT_TRANSITION_NE = 19 * TILE_SIZE + 5;
-        private const int DIRT_TRANSITION_N = 19 * TILE_SIZE + 6;
-        private const int DIRT_TRANSITION_NW = 19 * TILE_SIZE + 7;
+        private const int DIRT_TRANSITION_SE = 17 * TILE_COUNT + 5;
+        private const int DIRT_TRANSITION_S = 17 * TILE_COUNT + 6;
+        private const int DIRT_TRANSITION_SW = 17 * TILE_COUNT + 7;
+        private const int DIRT_TRANSITION_E = 18 * TILE_COUNT + 5;
+        private const int DIRT_PLOWED = 18 * TILE_COUNT + 6;
+        private const int DIRT_TRANSITION_W = 18 * TILE_COUNT + 7;
+        private const int DIRT_TRANSITION_NE = 19 * TILE_COUNT + 5;
+        private const int DIRT_TRANSITION_N = 19 * TILE_COUNT + 6;
+        private const int DIRT_TRANSITION_NW = 19 * TILE_COUNT + 7;
 
-        private const int CORN_BOTTOM_NONE = 19 * TILE_SIZE + 8;
-        private const int CORN_BOTTOM_E = 19 * TILE_SIZE + 9;
-        private const int CORN_BOTTOM_E_W = 19 * TILE_SIZE + 10;
-        private const int CORN_BOTTOM_W = 19 * TILE_SIZE + 11;
-        private const int CORN_TOP_NEAR_NONE = 18 * TILE_SIZE + 8;
-        private const int CORN_TOP_NEAR_E = 18 * TILE_SIZE + 9;
-        private const int CORN_TOP_NEAR_E_W = 18 * TILE_SIZE + 10;
-        private const int CORN_TOP_NEAR_W = 18 * TILE_SIZE + 11;
-        private const int CORN_TOP_FILL_NONE = 17 * TILE_SIZE + 8;
-        private const int CORN_TOP_FILL_E = 17 * TILE_SIZE + 9;
-        private const int CORN_TOP_FILL_E_W = 17 * TILE_SIZE + 10;
-        private const int CORN_TOP_FILL_W = 17 * TILE_SIZE + 11;
-        private const int CORN_TOP_FAR_NONE = 16 * TILE_SIZE + 8;
-        private const int CORN_TOP_FAR_E = 16 * TILE_SIZE + 9;
-        private const int CORN_TOP_FAR_E_W = 16 * TILE_SIZE + 10;
-        private const int CORN_TOP_FAR_W = 16 * TILE_SIZE + 11;
-        private const int CORN_TOP_FILL_NW = 21 * TILE_SIZE + 6;
-        private const int CORN_TOP_FILL_NE = 21 * TILE_SIZE + 7;
-        private const int CORN_TOP_FILL_SW = 22 * TILE_SIZE + 6;
-        private const int CORN_TOP_FILL_SE = 22 * TILE_SIZE + 7;
+        private const int CORN_BOTTOM_NONE = 19 * TILE_COUNT + 8;
+        private const int CORN_BOTTOM_E = 19 * TILE_COUNT + 9;
+        private const int CORN_BOTTOM_E_W = 19 * TILE_COUNT + 10;
+        private const int CORN_BOTTOM_W = 19 * TILE_COUNT + 11;
+        private const int CORN_TOP_NEAR_NONE = 18 * TILE_COUNT + 8;
+        private const int CORN_TOP_NEAR_E = 18 * TILE_COUNT + 9;
+        private const int CORN_TOP_NEAR_E_W = 18 * TILE_COUNT + 10;
+        private const int CORN_TOP_NEAR_W = 18 * TILE_COUNT + 11;
+        private const int CORN_TOP_FILL_NONE = 17 * TILE_COUNT + 8;
+        private const int CORN_TOP_FILL_E = 17 * TILE_COUNT + 9;
+        private const int CORN_TOP_FILL_E_W = 17 * TILE_COUNT + 10;
+        private const int CORN_TOP_FILL_W = 17 * TILE_COUNT + 11;
+        private const int CORN_TOP_FAR_NONE = 16 * TILE_COUNT + 8;
+        private const int CORN_TOP_FAR_E = 16 * TILE_COUNT + 9;
+        private const int CORN_TOP_FAR_E_W = 16 * TILE_COUNT + 10;
+        private const int CORN_TOP_FAR_W = 16 * TILE_COUNT + 11;
+        private const int CORN_TOP_FILL_NW = 21 * TILE_COUNT + 6;
+        private const int CORN_TOP_FILL_NE = 21 * TILE_COUNT + 7;
+        private const int CORN_TOP_FILL_SW = 22 * TILE_COUNT + 6;
+        private const int CORN_TOP_FILL_SE = 22 * TILE_COUNT + 7;
 
         private static readonly int[] GRASS_TILES = { GRASS, GRASS_2, GRASS_3, GRASS_4 };
     }

@@ -64,7 +64,7 @@ namespace MazeGame.Graphics
                     extraH = 64;
                     extraW = 64;
                 }
-                menu.RowCount = 1 + menu.ItemCount;
+                menu.RowCount = 2 + menu.ItemCount;
                 var titleTextSize = _TitleFont.MeasureString(menu.Title);
                 int titleCellCount = (int)Math.Ceiling(titleTextSize.X / TILE_SIZE);
                 int menuItemCellCount = (int)Math.Ceiling(menu.Items.Select(m => _TextFont.MeasureString(m.Label).X).Max() / TILE_SIZE);
@@ -75,11 +75,11 @@ namespace MazeGame.Graphics
                 menu.ClientSize = clientSize;
 
                 float titleTextX = (clientSize.X - titleTextSize.X) / 2;
-                float titleTextY = menuLocation.Y + extraH / 2 + (TILE_SIZE - titleTextSize.Y) / 2;
+                float titleTextY = menuLocation.Y + extraH / 2 + (TILE_SIZE * 2 - titleTextSize.Y) / 2;
                 menu.TitlePosition = new Vector2(titleTextX, titleTextY);
 
                 int itemX = menuLocation.X + extraW / 2;
-                int itemY = menuLocation.Y + extraH / 2 + TILE_SIZE;
+                int itemY = menuLocation.Y + extraH / 2 + TILE_SIZE * 2;
                 int textAreaWidth = menu.CellCount * TILE_SIZE;
                 foreach (var menuItem in menu.Items)
                 {

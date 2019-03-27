@@ -118,7 +118,7 @@ namespace MazeGame.Graphics
                     _Player.AdvanceAnimation();
                     var dX = Math.Sign(targetLocation.X - _Player.Location.X);
                     var dY = Math.Sign(targetLocation.Y - _Player.Location.Y);
-                    _Player.Location = new Point(_Player.Location.X + dX * 2, _Player.Location.Y + dY * 2);
+                    _Player.Location = new Point(_Player.Location.X + dX * 4, _Player.Location.Y + dY * 4);
 
                     CenterToPlayer();
                 }
@@ -145,8 +145,6 @@ namespace MazeGame.Graphics
         
         public void RenderScene(SpriteBatch spriteBatch)
         {
-            var sceneFilter = new Color(_Fade, _Fade, _Fade, 255);
-
             var entityRows = new Dictionary<int, List<Entity>>();
             foreach (var entity in _Entities)
             {
@@ -158,7 +156,7 @@ namespace MazeGame.Graphics
             {
                 if (_Map != null)
                 {
-                    _TileRenderer.RenderBase(spriteBatch, _Map, _ScrollOffset, _ClientSize, sceneFilter);
+                    _TileRenderer.RenderBase(spriteBatch, _Map, _ScrollOffset, _ClientSize, (byte)_Fade);
 
                     foreach (int y in _TileRenderer.GetVisibleOverlayRows(_Map, _ScrollOffset, _ClientSize, out int startY, out int endY))
                     {
@@ -170,7 +168,7 @@ namespace MazeGame.Graphics
                             }
                         }
 
-                        _TileRenderer.RenderOverlaysRow(spriteBatch, _Map, _ScrollOffset, _ClientSize, y, startY, endY, sceneFilter);
+                        _TileRenderer.RenderOverlaysRow(spriteBatch, _Map, _ScrollOffset, _ClientSize, y, startY, endY, (byte)_Fade);
                     }
                 }
 
@@ -276,10 +274,6 @@ namespace MazeGame.Graphics
             // Move the offset if needed: try to keep the player centered, x and y should be independently calculated
             var offsetX = _Player.Location.X - (_ClientSize.X / 2);
             var offsetY = _Player.Location.Y - (_ClientSize.Y / 2);
-            if (offsetX < 0) offsetX = 0;
-            if (offsetY < 0) offsetY = 0;
-            if (offsetX >= _Map.MapPixelSize.X - _ClientSize.X) offsetX = _Map.MapPixelSize.X - _ClientSize.X;
-            if (offsetY >= _Map.MapPixelSize.Y - _ClientSize.Y) offsetY = _Map.MapPixelSize.Y - _ClientSize.Y;
             _ScrollOffset.X = offsetX;
             _ScrollOffset.Y = offsetY;
         }

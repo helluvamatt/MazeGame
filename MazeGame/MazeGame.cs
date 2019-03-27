@@ -1,5 +1,6 @@
 ﻿using MazeGame.Graphics;
 using MazeGame.Level;
+using MazeGame.Content;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -19,9 +20,9 @@ namespace MazeGame
             _Graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             Window.AllowUserResizing = true;
-            Window.Title = "MazeGame";
+            Window.Title = Strings.Game_Title;
             IsMouseVisible = true;
-            TargetElapsedTime = TimeSpan.FromSeconds(1.0 / 30.0); // 30hz "Tick"
+            TargetElapsedTime = TimeSpan.FromSeconds(1.0 / 25.0); // 25hz "Tick"
             _SceneManager = new SceneManager(Content);
             _SceneManager.Exit += Exit;
         }

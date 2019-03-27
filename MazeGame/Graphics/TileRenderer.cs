@@ -4,9 +4,6 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MazeGame.Graphics
 {
@@ -21,16 +18,19 @@ namespace MazeGame.Graphics
             _TextureCache = new Dictionary<string, Texture2D>();
         }
 
-        public void RenderBase(SpriteBatch sb, Map map, Point offset, Point size, Color filter)
+        public void RenderBase(SpriteBatch sb, Map map, Point offset, Point size, byte maxLevel)
         {
             if (sb == null) throw new ArgumentNullException(nameof(sb));
             if (map == null) throw new ArgumentNullException(nameof(map));
 
             var texture = LoadTexture(map.Texture);
+            var filter = new Color(maxLevel, maxLevel, maxLevel, (byte)255);
 
             // Draw tiles, culling as necessary
             int startX = offset.X / map.TileWidth;
             int startY = offset.Y / map.TileHeight;
+            if (startX < 1) startX--;
+            if (startY < 1) startY--;
             int endX = Math.Min(map.Width, (offset.X + size.X) / map.TileWidth + 1);
             int endY = Math.Min(map.Height, (offset.Y + size.Y) / map.TileHeight + 1);
             int scX, scY;
@@ -45,16 +45,21 @@ namespace MazeGame.Graphics
                     {
                         sb.Draw(texture, destRect, srcRect, filter);
                     }
+                    else if (map.TryGetTile(map.GetNonGameAreaTile(x, y), out Rectangle srcRect2))
+                    {
+                        sb.Draw(texture, destRect, srcRect2, filter);
+                    }
                 }
             }
         }
 
-        public void RenderOverlaysRow(SpriteBatch sb, Map map, Point offset, Point size, int y, int startY, int endY, Color filter)
+        public void RenderOverlaysRow(SpriteBatch sb, Map map, Point offset, Point size, int y, int startY, int endY, byte maxLevel)
         {
             if (sb == null) throw new ArgumentNullException(nameof(sb));
             if (map == null) throw new ArgumentNullException(nameof(map));
 
             var texture = LoadTexture(map.Texture);
+            var filter = new Color(maxLevel, maxLevel, maxLevel, (byte)255);
 
             // Draw tiles, culling as necessary
             int startX = offset.X / map.TileWidth;
