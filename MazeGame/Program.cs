@@ -13,8 +13,7 @@ namespace MazeGame
         [STAThread]
         static void Main()
         {
-            using (var game = new Game1())
-                game.Run();
+            using (var game = new MazeGame()) game.Run();
         }
     }
 }
