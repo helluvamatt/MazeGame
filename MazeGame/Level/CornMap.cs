@@ -1,21 +1,35 @@
-﻿using MazeGame.Graphics;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using System;
 using System.Collections.Generic;
 
 namespace MazeGame.Level
 {
-    internal class CornMap : Map
+    internal class CornMap : MazeMap
     {
-        public CornMap(int vPathCount, int hPathCount) : base(vPathCount, hPathCount) { }
+        private const string MAP_NAME = "CornMaze";
 
-        public override Point GetPlayerStart() => new Point(2, 2);
-
-        public override string Texture => TEXTURE;
+        public CornMap(int vPathCount, int hPathCount, ContentManager contentManager) : base(MAP_NAME, vPathCount, hPathCount, contentManager) { }
+        
         public override int TileWidth => TILE_SIZE;
         public override int TileHeight => TILE_SIZE;
 
-        protected override bool CheckTile(Point pt) => TryGetSpace(pt.X, pt.Y, out Space space) && space.CanWalk;
+        public override Point GetPlayerStart(string levelFromName) => GetCenterOfTile(new Point(Width - 3, 4));
+
+        public override bool CheckTeleport(Point worldLocation, out string newMapName)
+        {
+            newMapName = "town";
+            var region = new Rectangle((Width - 1) * TILE_SIZE, TILE_SIZE, TILE_SIZE, 3 * TILE_SIZE);
+            return region.Contains(worldLocation);
+        }
+
+        protected override string Texture => Content.Assets.Gfx.terrain_atlas;
+
+        protected override bool CheckLocation(Point pt)
+        {
+            pt = GetEntityTileLocation(pt);
+            return TryGetSpace(pt.X, pt.Y, out Space space) && space.CanWalk;
+        }
 
         protected override void MapTiles()
         {
@@ -56,7 +70,7 @@ namespace MazeGame.Level
                     bool hasPathNorth = y > 0 && !cell.North;
                     bool hasPathSouth = y < _VPathCount - 1 && !cell.South;
                     bool hasPathWest = x > 0 && !cell.West;
-                    bool hasPathEast = x < _HPathCount - 1 && !cell.East;
+                    bool hasPathEast = (x < _HPathCount - 1 && !cell.East) || (y == 0 && x == _HPathCount - 1);
 
                     int nwCorner = DIRT_TRANSITION_W_N;
                     if (hasPathNorth && hasPathWest) nwCorner = DIRT_TRANSITION_NW;
@@ -78,7 +92,6 @@ namespace MazeGame.Level
                     else if (hasPathSouth) seCorner = DIRT_TRANSITION_E;
                     else if (hasPathEast) seCorner = DIRT_TRANSITION_S;
 
-                    
                     row1.Add(Space.Create(baseX + 0, baseY + 0, DIRT_PLOWED, false));
                     row1.Add(Space.Create(baseX + 1, baseY + 0, hasPathNorth ? DIRT_TRANSITION_W : DIRT_PLOWED, hasPathNorth));
                     row1.Add(Space.Create(baseX + 2, baseY + 0, hasPathNorth ? GetRandomGrass(rng) : DIRT_PLOWED, hasPathNorth));
@@ -98,10 +111,20 @@ namespace MazeGame.Level
                 }
 
                 // Special handling for the last column
-                row1.Add(Space.Create(cellCount - 1, baseY + 0, DIRT_PLOWED, false));
-                row2.Add(Space.Create(cellCount - 1, baseY + 1, DIRT_PLOWED, false));
-                row3.Add(Space.Create(cellCount - 1, baseY + 2, DIRT_PLOWED, false));
-                row4.Add(Space.Create(cellCount - 1, baseY + 3, DIRT_PLOWED, false));
+                if (y == 0)
+                {
+                    row1.Add(Space.Create(cellCount - 1, baseY + 0, DIRT_PLOWED, false));
+                    row2.Add(Space.Create(cellCount - 1, baseY + 1, DIRT_TRANSITION_N, true));
+                    row3.Add(Space.Create(cellCount - 1, baseY + 2, GetRandomGrass(rng), true));
+                    row4.Add(Space.Create(cellCount - 1, baseY + 3, DIRT_TRANSITION_S, true));
+                }
+                else
+                {
+                    row1.Add(Space.Create(cellCount - 1, baseY + 0, DIRT_PLOWED, false));
+                    row2.Add(Space.Create(cellCount - 1, baseY + 1, DIRT_PLOWED, false));
+                    row3.Add(Space.Create(cellCount - 1, baseY + 2, DIRT_PLOWED, false));
+                    row4.Add(Space.Create(cellCount - 1, baseY + 3, DIRT_PLOWED, false));
+                }
 
                 _Rows.Add(new Row(row1));
                 _Rows.Add(new Row(row2));
@@ -211,12 +234,6 @@ namespace MazeGame.Level
                     else if (tile == CORN_TILE_TOP_FILL || tile == CORN_TILE_TOP_NEAR) space.OverlayY = space.Y + 1;
                 }
             }
-        }
-
-        public override int GetNonGameAreaTile(int x, int y)
-        {
-            // TODO Areas outside of the level
-            return CORN_TOP_FILL_E_W;
         }
 
         private int GetRandomGrass(Random rng) => GRASS_TILES[rng.Next(GRASS_TILES.Length)];

@@ -4,18 +4,16 @@ using Microsoft.Xna.Framework.Content;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using MazeGame.Primitives;
 
-namespace MazeGame.Graphics
+namespace MazeGame
 {
-    internal class EntityRenderer : IDisposable
+    internal class EntityManager : IDisposable
     {
         private readonly ContentManager _ContentManager;
         private readonly Dictionary<string, Texture2D> _LoadedTextures;
 
-        public EntityRenderer(ContentManager contentManager)
+        public EntityManager(ContentManager contentManager)
         {
             _ContentManager = contentManager;
             _LoadedTextures = new Dictionary<string, Texture2D>();
@@ -30,7 +28,7 @@ namespace MazeGame.Graphics
             _LoadedTextures.Clear();
         }
 
-        public PlayerEntity CreateDefaultPlayer(Point startLoc, Point startLocTile)
+        public PlayerEntity CreateDefaultPlayer(Point startLoc)
         {
             var sprites = new string[] { PlayerEntity.SPRITE_BODY_MALE, PlayerEntity.SPRITE_LEGS_PANTS_GREENISH, PlayerEntity.SPRITE_TORSO_CHAIN_ARMOR, PlayerEntity.SPRITE_HEAD_HAIR_BLONDE, PlayerEntity.SPRITE_FEET_SHOES_BROWN };
             foreach (var sprite in sprites)
@@ -40,20 +38,17 @@ namespace MazeGame.Graphics
                     _LoadedTextures.Add(sprite, _ContentManager.Load<Texture2D>(sprite));
                 }
             }
-            return new PlayerEntity(sprites, startLoc, startLocTile);
+            return new PlayerEntity(sprites, startLoc);
         }
 
-        public void RenderEntity(SpriteBatch sb, Entity entity, Point offset)
+        public Texture2D GetEntitySprite(string name)
         {
-            var srcRect = entity.SpriteTile;
-            var destRect = new Rectangle(entity.Location.X - entity.SpriteSize.X / 2 - offset.X, entity.Location.Y - entity.SpriteSize.Y / 2 - offset.Y, entity.SpriteSize.X, entity.SpriteSize.Y);
-            foreach (var key in entity.SpriteKeys)
+            if (!_LoadedTextures.TryGetValue(name, out Texture2D texture))
             {
-                if (_LoadedTextures.TryGetValue(key, out Texture2D texture))
-                {
-                    sb.Draw(texture, destRect, srcRect, Color.White);
-                }
+                texture = _ContentManager.Load<Texture2D>(name);
+                _LoadedTextures.Add(name, texture);
             }
+            return texture;
         }
     }
 }

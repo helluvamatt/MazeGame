@@ -10,15 +10,16 @@
 
 #-------------------------------- References --------------------------------#
 
+/reference:..\..\Tools\MonoGame.Extended.Content.Pipeline_1.1.0\MonoGame.Extended.Content.Pipeline.dll
 
 #---------------------------------- Content ---------------------------------#
 
-#begin fonts/Cinzel_Decorative.spritefont
+#begin fonts/CinzelDecorative.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor
 /processorParam:PremultiplyAlpha=True
 /processorParam:TextureFormat=Compressed
-/build:fonts/Cinzel_Decorative.spritefont
+/build:fonts/CinzelDecorative.spritefont
 
 #begin fonts/Dynalight.spritefont
 /importer:FontDescriptionImporter
@@ -27,7 +28,21 @@
 /processorParam:TextureFormat=Compressed
 /build:fonts/Dynalight.spritefont
 
-#begin gfx/base_out_atlas.png
+#begin fonts/NothingYouCouldDo.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:fonts/NothingYouCouldDo.spritefont
+
+#begin fonts/OpenSansCondensed.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:fonts/OpenSansCondensed.spritefont
+
+#begin gfx/misc_atlas.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -37,7 +52,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:gfx/base_out_atlas.png
+/build:gfx/misc_atlas.png
 
 #begin gfx/slash/BEHIND_quiver.png
 /importer:TextureImporter
@@ -1070,4 +1085,9 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:gfx/walkcycle/WEAPON_shield_cutout_chain_armor_helmet.png
+
+#begin levels/town.tmx
+/importer:TiledMapImporter
+/processor:TiledMapProcessor
+/build:levels/town.tmx
 

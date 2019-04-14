@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using MazeGame.Level;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 
@@ -6,40 +7,59 @@ namespace MazeGame.Primitives
 {
     internal abstract class Entity
     {
-        protected readonly int _AnimStepCount;
+        private Point _Location;
 
-        public Entity(int animStepCount, string[] spriteKeys, Point initialLocation, Point initialLocationTile, Direction initialFacing = Direction.South)
+        public Entity(Point initialLocation, Direction initialFacing)
         {
-            _AnimStepCount = animStepCount;
-            SpriteKeys = spriteKeys ?? throw new ArgumentNullException(nameof(spriteKeys));
             Location = initialLocation;
-            LocationTile = initialLocationTile;
             Facing = initialFacing;
         }
+        
+        public Point Location
+        {
+            get => _Location;
+            set
+            {
+                if (_Location != value)
+                {
+                    _Location = value;
+                    LocationChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+        }
 
-        public Point LocationTile { get; set; }
-        public Point Location { get; set; }
+        public event EventHandler LocationChanged;
 
-        public Direction Facing { get; set; }
+        public Direction Facing { get; protected set; }
 
         public int AnimationStep { get; protected set; }
 
-        public string[] SpriteKeys { get; }
+        public abstract Rectangle GetBoundingRectangle(Point location);
 
-        public virtual void AdvanceAnimation()
+        public Rectangle BoundingRectangle => GetBoundingRectangle(Location);
+
+        public virtual void AdvanceAnimation() { }
+
+        public virtual void ResetAnimation() { }
+
+        public virtual void Update(GameTime gameTime, Map map)
         {
-            var nextStep = AnimationStep + 1;
-            if (nextStep >= _AnimStepCount) nextStep = 0;
-            AnimationStep = nextStep;
+            // Update state of the entity
         }
 
-        public virtual void ResetAnimation()
+        public virtual void Render(SpriteBatch sb, EntityManager entityManager, Point offset, int fade)
         {
-            AnimationStep = 0;
+            // Some entity types won't do any rendering
         }
 
-        public abstract Rectangle SpriteTile { get; }
-
-        public abstract Point SpriteSize { get; }
+        /// <summary>
+        /// The given actor has requested to interact with this entity
+        /// </summary>
+        /// <param name="interaction">Interaction interface</param>
+        /// <param name="actor">The actor requesting the interaction</param>
+        public virtual void Interact(IInteraction interaction, Entity actor)
+        {
+            // The given actor (usually the player) has chosen to interact with this entity...
+        }
     }
 }

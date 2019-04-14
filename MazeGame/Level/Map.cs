@@ -1,199 +1,116 @@
-﻿using MazeGame.Graphics;
+﻿using MazeGame.Primitives;
+using MazeGame.Primitives.Collections;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace MazeGame.Level
 {
     internal abstract class Map
     {
-        private readonly Dictionary<int, Tile> _Tiles;
+        protected readonly ObservableList<Entity> _Entities;
 
-        protected readonly int _VPathCount;
-        protected readonly int _HPathCount;
-        protected readonly List<Row> _Rows;
-        
-        protected Map(int vPathCount, int hPathCount)
+        private PlayerEntity _Player;
+
+        public Map(string name)
         {
-            _VPathCount = vPathCount;
-            _HPathCount = hPathCount;
-            _Rows = new List<Row>();
-            _Tiles = new Dictionary<int, Tile>();
-            MapTiles();
+            Name = name;
+            _Entities = new ObservableList<Entity>();
+            _Entities.ListClearing += OnEntitiesListClearing;
+            _Entities.ListChanged += OnEntitiesListChanged;
         }
 
-        public Tile GetTile(int id) => _Tiles.ContainsKey(id) ? _Tiles[id] : null;
+        #region Properties
 
-        public bool TryGetTile(int id, out Rectangle bounds)
+        public PlayerEntity Player
         {
-            var tile = GetTile(id);
-            if (tile != null)
+            get => _Player;
+            set
             {
-                bounds = tile.Bounds;
-                return true;
-            }
-            bounds = Rectangle.Empty;
-            return false;
-        }
-
-        public Space GetSpace(int x, int y) => y > -1 && y < _Rows.Count ? _Rows[y].GetCell(x) : null;
-
-        public bool TryGetSpace(int x, int y, out Space space)
-        {
-            space = GetSpace(x, y);
-            return space != null;
-        }
-
-        public virtual int GetNonGameAreaTile(int x, int y) => -1;
-
-        public IEnumerable<Space> GetOverlays(int x, int y)
-        {
-            var yCount = _Rows.Count;
-            for (int y2 = 0; y2 < yCount; y2++)
-            {
-                if (TryGetSpace(x, y2, out Space space) && space.OverlayY == y)
+                if (_Player != value)
                 {
-                    yield return space;
+                    if (_Player != null) _Entities.Remove(_Player);
+                    _Player = value;
+                    if (_Player != null) _Entities.Insert(0, _Player);
                 }
             }
         }
 
-        public IEnumerable<int> GetOverlayRows(int startY, int endY)
-        {
-            var window = _Rows.Skip(startY).Take(endY - startY + 1).ToList();
-            int min = window.Min(r => r.MinOverlay);
-            int max = window.Max(r => r.MaxOverlay);
-            return Enumerable.Range(min, max - min + 1);
-        }
+        public string Name { get; }
 
-        public int Height => _Rows.Count;
-        public int Width => _Rows.Count > 0 ? _Rows[0].CellCount : 0;
-        public Point Size => new Point(Width, Height);
-
-        public abstract string Texture { get; }
         public abstract int TileWidth { get; }
         public abstract int TileHeight { get; }
+        public abstract int Width { get; }
+        public abstract int Height { get; }
+        public int PixelWidth => Width * TileWidth;
+        public int PixelHeight => Height * TileHeight;
+
+        public Point Size => new Point(Width, Height);
         public Point MapPixelSize => new Point(Width * TileWidth, Height * TileHeight);
 
-        protected abstract void MapTiles();
+        #endregion
 
-        protected abstract void Layout(Random rng, MazeCell[,] maze);
+        public event EventHandler<EntityLocationChangedEventArgs> EntityLocationChanged;
+
+        public abstract Point GetPlayerStart(string fromLevelName);
+        public abstract bool CheckTeleport(Point worldLocation, out string newMapName);
         
-        public abstract Point GetPlayerStart();
-
-        public Point GetEntityLocation(Point pt) => new Point(pt.X * TileWidth + TileWidth / 2, pt.Y * TileHeight - TileHeight / 2);
-
-        protected abstract bool CheckTile(Point pt);
-
-        public bool CanMoveTo(Point pt)
+        public void Update(GameTime gameTime)
         {
-            if (pt.X < 0 || pt.Y < 0 || pt.X >= Width || pt.Y >= Height) return false;
-            return CheckTile(pt);
+            foreach (var entity in _Entities) entity.Update(gameTime, this);
+            OnUpdate(gameTime);
         }
 
-        public void Generate()
+        protected abstract bool CheckLocation(Point pt);
+
+        protected virtual void OnUpdate(GameTime gameTime) { }
+
+        public abstract void Render(SpriteBatch spriteBatch, EntityManager entityManager, Point scrollOffset, Point clientSize, int fade);
+
+        public bool CanMoveTo(Entity entity, Point pt)
         {
-            var rng = new Random();
-
-            // Randomized iterative depth-first traversal used to create labyrinths
-            var cells = new MazeCell[_VPathCount, _HPathCount];
-            for (int y = 0; y < _VPathCount; y++)
-            {
-                for (int x = 0; x < _HPathCount; x++)
-                {
-                    cells[y, x] = new MazeCell(x, y);
-                }
-            }
-            var stack = new Stack<MazeCell>();
-            stack.Push(cells[0, 0]);
-
-            while (stack.Any())
-            {
-                var pathstart = stack.Pop();
-                var pathstack = new Stack<MazeCell>();
-                pathstack.Push(pathstart);
-
-                while (pathstack.Any())
-                {
-                    var cell = pathstack.Pop();
-                    cell.Visited = true;
-
-                    var neighbors = new List<MazeCell>();
-                    if (cell.X > 0 && !cells[cell.Y, cell.X - 1].Visited) neighbors.Add(cells[cell.Y, cell.X - 1]);
-                    if (cell.Y > 0 && !cells[cell.Y - 1, cell.X].Visited) neighbors.Add(cells[cell.Y - 1, cell.X]);
-                    if (cell.X < _HPathCount - 1 && !cells[cell.Y, cell.X + 1].Visited) neighbors.Add(cells[cell.Y, cell.X + 1]);
-                    if (cell.Y < _VPathCount - 1 && !cells[cell.Y + 1, cell.X].Visited) neighbors.Add(cells[cell.Y + 1, cell.X]);
-
-                    if (neighbors.Any())
-                    {
-                        var neighbor = neighbors[rng.Next(neighbors.Count)];
-                        if (neighbor.X == cell.X && neighbor.Y == cell.Y - 1) { neighbor.South = false; cell.North = false; }
-                        else if (neighbor.X == cell.X && neighbor.Y == cell.Y + 1) { neighbor.North = false; cell.South = false; }
-                        else if (neighbor.X == cell.X - 1 && neighbor.Y == cell.Y) { neighbor.East = false; cell.West = false; }
-                        else if (neighbor.X == cell.X + 1 && neighbor.Y == cell.Y) { neighbor.West = false; cell.East = false; }
-
-                        stack.Push(neighbor);
-                        pathstack.Push(neighbor);
-                    }
-                }
-            }
-
-            Layout(rng, cells);
+            if (pt.X < 0 || pt.Y < 0 || pt.X >= PixelWidth || pt.Y >= PixelHeight) return false;
+            if (FindEntityAt(GetEntityTileLocation(pt), out Entity e) && e != entity) return false;
+            return CheckLocation(pt);
         }
 
-        protected void AddTile(ref int id, Rectangle bounds)
+        public bool FindEntityAt(Point tileLoc, out Entity entity)
         {
-            _Tiles.Add(id, new Tile(id, bounds));
-            id++;
+            entity = _Entities.FirstOrDefault(e => GetEntityTileLocation(e.Location) == tileLoc);
+            return entity != null;
         }
 
-        protected class Row
+        public Point GetEntityTileLocation(Point pt) => new Point(pt.X / TileWidth, pt.Y / TileHeight);
+
+        public Point GetCenterOfTile(Point pt) => new Point(pt.X * TileWidth + TileWidth / 2, pt.Y * TileHeight - TileHeight / 2);
+
+        private void OnEntitiesListClearing(object sender, EventArgs e)
         {
-            private readonly List<Space> _Cells;
-
-            public Row(IEnumerable<Space> cells)
-            {
-                _Cells = new List<Space>();
-                _Cells.AddRange(cells);
-
-                CellCount = _Cells.Count;
-                MinOverlay = _Cells.Min(c => c.OverlayY);
-                MaxOverlay = _Cells.Max(c => c.OverlayY);
-            }
-
-            public int CellCount { get; }
-            public int MinOverlay { get; }
-            public int MaxOverlay { get; }
-
-            public IEnumerable<Space> Cells => _Cells;
-
-            public Space GetCell(int x) => x > -1 && x < _Cells.Count ? _Cells[x] : null;
+            foreach (var entity in _Entities) entity.LocationChanged -= OnEntityLocationChanged;
         }
 
-        protected class MazeCell
+        private void OnEntitiesListChanged(object sender, ListChangedEventArgs<Entity> args)
         {
-            public MazeCell(int x, int y)
+            switch (args.Type)
             {
-                X = x;
-                Y = y;
-                North = true;
-                South = true;
-                East = true;
-                West = true;
+                case ListChangedType.Add:
+                    args.NewItem.LocationChanged += OnEntityLocationChanged;
+                    break;
+                case ListChangedType.Remove:
+                    args.OldItem.LocationChanged -= OnEntityLocationChanged;
+                    break;
+                case ListChangedType.Replace:
+                    args.OldItem.LocationChanged -= OnEntityLocationChanged;
+                    args.NewItem.LocationChanged += OnEntityLocationChanged;
+                    break;
             }
+        }
 
-            public int X { get; }
-            public int Y { get; }
-
-            // Visited?
-            public bool Visited { get; set; }
-
-            // Wall states
-            public bool North { get; set; }
-            public bool South { get; set; }
-            public bool East { get; set; }
-            public bool West { get; set; }
+        private void OnEntityLocationChanged(object sender, EventArgs e)
+        {
+            var entity = (Entity)sender;
+            EntityLocationChanged?.Invoke(this, new EntityLocationChangedEventArgs(entity, entity == Player));
         }
     }
 }

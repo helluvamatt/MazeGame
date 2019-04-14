@@ -117,9 +117,25 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AreYouSure_Label" xml:space="preserve">
+    <value>Are you sure you want to quit?</value>
+  </data>
+  <data name="Cancel_Button" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Dialogue_Sign" xml:space="preserve">
+    <value>The sign reads: "{0}"</value>
+    <comment>{0} is replaced by the sign text</comment>
+  </data>
+  <data name="Fullscreen_Label" xml:space="preserve">
+    <value>Fullscreen</value>
+  </data>
   <data name="Game_Title" xml:space="preserve">
     <value>MazeGame</value>
     <comment>** Working Title **</comment>
+  </data>
+  <data name="InteractionWindow_Title_Sign" xml:space="preserve">
+    <value>Sign</value>
   </data>
   <data name="MainMenu_Item0_Label" xml:space="preserve">
     <value>Continue</value>
@@ -136,6 +152,13 @@
   <data name="MainMenu_Title" xml:space="preserve">
     <value>MazeGame</value>
     <comment>Same as Game_Title</comment>
+  </data>
+  <data name="No_Button" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="OK_Button" xml:space="preserve">
+    <value>OK</value>
+    <comment>Translation Hint: "Accept"</comment>
   </data>
   <data name="PauseMenu_Item0_Label" xml:space="preserve">
     <value>Resume</value>
@@ -154,5 +177,20 @@
   </data>
   <data name="PauseMenu_Title" xml:space="preserve">
     <value>Paused</value>
+  </data>
+  <data name="SettingsMenu_Title" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="Sign_CornMaze" xml:space="preserve">
+    <value>Corn Maze</value>
+  </data>
+  <data name="Sign_Home" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="Sign_TownInfo" xml:space="preserve">
+    <value>Welcome to City Hall</value>
+  </data>
+  <data name="Yes_Button" xml:space="preserve">
+    <value>Yes</value>
   </data>
 </root>

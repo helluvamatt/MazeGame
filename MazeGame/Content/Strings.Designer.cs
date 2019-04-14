@@ -61,11 +61,56 @@ namespace MazeGame.Content {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to quit?.
+        /// </summary>
+        internal static string AreYouSure_Label {
+            get {
+                return ResourceManager.GetString("AreYouSure_Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        internal static string Cancel_Button {
+            get {
+                return ResourceManager.GetString("Cancel_Button", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The sign reads: &quot;{0}&quot;.
+        /// </summary>
+        internal static string Dialogue_Sign {
+            get {
+                return ResourceManager.GetString("Dialogue_Sign", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fullscreen.
+        /// </summary>
+        internal static string Fullscreen_Label {
+            get {
+                return ResourceManager.GetString("Fullscreen_Label", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to MazeGame.
         /// </summary>
         internal static string Game_Title {
             get {
                 return ResourceManager.GetString("Game_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sign.
+        /// </summary>
+        internal static string InteractionWindow_Title_Sign {
+            get {
+                return ResourceManager.GetString("InteractionWindow_Title_Sign", resourceCulture);
             }
         }
         
@@ -111,6 +156,24 @@ namespace MazeGame.Content {
         internal static string MainMenu_Title {
             get {
                 return ResourceManager.GetString("MainMenu_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No.
+        /// </summary>
+        internal static string No_Button {
+            get {
+                return ResourceManager.GetString("No_Button", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to OK.
+        /// </summary>
+        internal static string OK_Button {
+            get {
+                return ResourceManager.GetString("OK_Button", resourceCulture);
             }
         }
         
@@ -165,6 +228,51 @@ namespace MazeGame.Content {
         internal static string PauseMenu_Title {
             get {
                 return ResourceManager.GetString("PauseMenu_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Settings.
+        /// </summary>
+        internal static string SettingsMenu_Title {
+            get {
+                return ResourceManager.GetString("SettingsMenu_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Corn Maze.
+        /// </summary>
+        internal static string Sign_CornMaze {
+            get {
+                return ResourceManager.GetString("Sign_CornMaze", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Home.
+        /// </summary>
+        internal static string Sign_Home {
+            get {
+                return ResourceManager.GetString("Sign_Home", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Welcome to City Hall.
+        /// </summary>
+        internal static string Sign_TownInfo {
+            get {
+                return ResourceManager.GetString("Sign_TownInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Yes.
+        /// </summary>
+        internal static string Yes_Button {
+            get {
+                return ResourceManager.GetString("Yes_Button", resourceCulture);
             }
         }
     }
